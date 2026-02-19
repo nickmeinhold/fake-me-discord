@@ -1,0 +1,21 @@
+{
+  "name": "fake-me-discord",
+  "version": "0.1.0",
+  "description": "Discord bot that impersonates you using Claude AI",
+  "type": "module",
+  "scripts": {
+    "start": "tsx src/index.ts",
+    "ingest": "tsx src/ingest/process-export.ts"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.39.0",
+    "discord.js": "^14.18.0",
+    "dotenv": "^16.4.7",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.4",
+    "tsx": "^4.19.3",
+    "typescript": "^5.7.3"
+  }
+}
