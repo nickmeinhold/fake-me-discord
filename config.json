@@ -1,0 +1,23 @@
+{
+  "persona": {
+    "name": "YourName",
+    "discordUserId": "123456789012345678"
+  },
+  "channels": [
+    "channel-id-1",
+    "channel-id-2"
+  ],
+  "behavior": {
+    "replyChance": 0.85,
+    "cooldownMs": 5000,
+    "minDelayMs": 1500,
+    "maxDelayMs": 8000,
+    "contextMessageCount": 25,
+    "ignoreBots": true
+  },
+  "ai": {
+    "model": "claude-sonnet-4-20250514",
+    "maxTokens": 300,
+    "temperature": 0.9
+  }
+}
