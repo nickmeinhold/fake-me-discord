@@ -6,6 +6,7 @@ const client = new Anthropic({ apiKey: env.ANTHROPIC_API_KEY });
 interface GenerateOptions {
   systemPrompt: string;
   messages: Array<{ role: "user" | "assistant"; content: string }>;
+  maxTokens?: number;
 }
 
 /**
@@ -21,7 +22,7 @@ export async function generateResponse(options: GenerateOptions): Promise<string
 
   const response = await client.messages.create({
     model: config.ai.model,
-    max_tokens: config.ai.maxTokens,
+    max_tokens: options.maxTokens ?? config.ai.maxTokens,
     temperature: config.ai.temperature,
     system: systemPrompt,
     messages,

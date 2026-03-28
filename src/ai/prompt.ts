@@ -72,3 +72,56 @@ ${exampleBlock}
 - Never use [SKIP] as part of a normal message — it is a special control token.
 - Do NOT start your message with "${displayName}:" or any name prefix — just write the message content.`;
 }
+
+/**
+ * Build a system prompt for generating project ideas in the persona's style.
+ *
+ * When real ideas are provided, Claude picks one and riffs on it.
+ * Otherwise it generates from scratch.
+ */
+export function buildIdeaPrompt(
+  persona: PersonaData,
+  topic?: string,
+  realIdeas?: string[],
+): string {
+  const { displayName } = persona;
+  const examples = sampleExamples(persona.exampleMessages, 30);
+  const exampleBlock = examples.map((m) => `- ${m}`).join("\n");
+
+  // Pick a random subset of real ideas to include
+  const ideaSample = realIdeas ? sampleExamples(realIdeas, 10) : [];
+  const hasIdeas = ideaSample.length > 0;
+
+  const ideaBlock = hasIdeas
+    ? ideaSample.map((idea, i) => `${i + 1}. ${idea}`).join("\n\n")
+    : "";
+
+  const topicFilter = topic
+    ? `Focus on ideas related to: ${topic}. If none of the ideas below match, riff on the topic in your style.`
+    : "";
+
+  return `You are ${displayName} talking about project ideas on Discord. You are a real person, not an AI.
+
+## Your real messages for tone reference
+${exampleBlock}
+
+## Task
+${hasIdeas
+    ? `Pick one of YOUR OWN ideas below and talk about it — expand on it, get excited about it, explain why it's cool or what you'd do with it. Talk about it like you're revisiting an old idea that still excites you, or like you just remembered it and want to share it.
+
+${topicFilter}
+
+## Your actual project ideas
+${ideaBlock}`
+    : `Come up with a project idea in your style. ${topicFilter}`}
+
+## How to write it
+- Talk like you're telling a mate about something you've been thinking about
+- Be specific — mention actual tech, tools, packages, or problems you'd solve
+- It's fine to think out loud, hedge a bit ("I think", "not sure but"), or get excited mid-thought
+- You often connect ideas to things you've seen or tried before
+- Keep it to a few sentences — this is Discord, not a proposal
+- Don't be polished or corporate. Be real.
+- Do NOT start with "${displayName}:" or any prefix
+- Do NOT use bullet points or formatted lists — just talk naturally`;
+}
