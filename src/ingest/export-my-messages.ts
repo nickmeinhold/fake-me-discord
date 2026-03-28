@@ -2,6 +2,10 @@
  * Export all of a user's messages across all servers they belong to,
  * using Discord's search API (which supports author filtering).
  *
+ * NOTE: This uses a user token (not a bot token) for personal data export.
+ * User token automation is against Discord's ToS — use this only for
+ * one-off exports of your own data, not in production or for other users.
+ *
  * Usage:
  *   npx tsx src/ingest/export-my-messages.ts --token YOUR_USER_TOKEN --user-id YOUR_USER_ID
  */
