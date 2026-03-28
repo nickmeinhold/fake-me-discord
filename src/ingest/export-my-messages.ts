@@ -40,7 +40,7 @@ function parseArgs(): CliArgs {
   };
 }
 
-async function api(token: string, path: string, params?: Record<string, string>): Promise<any> {
+async function api(token: string, path: string, params?: Record<string, string>, retries = 0): Promise<any> {
   const url = new URL(`${BASE}${path}`);
   if (params) {
     for (const [k, v] of Object.entries(params)) url.searchParams.set(k, v);
@@ -51,11 +51,14 @@ async function api(token: string, path: string, params?: Record<string, string>)
   });
 
   if (res.status === 429) {
+    if (retries >= 5) {
+      throw new Error(`Rate limited ${retries} times on ${path} — giving up`);
+    }
     const retry = res.headers.get("Retry-After");
     const waitMs = (parseFloat(retry ?? "5") + 0.5) * 1000;
-    console.log(`  Rate limited, waiting ${Math.round(waitMs / 1000)}s...`);
+    console.log(`  Rate limited (attempt ${retries + 1}/5), waiting ${Math.round(waitMs / 1000)}s...`);
     await sleep(waitMs);
-    return api(token, path, params);
+    return api(token, path, params, retries + 1);
   }
 
   if (!res.ok) {
