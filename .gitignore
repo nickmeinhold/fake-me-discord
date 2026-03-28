@@ -1,5 +1,6 @@
 node_modules/
 dist/
 .env
-data/raw/
-data/persona.json
+.DS_Store
+data/
+tools/

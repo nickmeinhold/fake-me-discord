@@ -2,6 +2,7 @@ import { env, config } from "./config.js";
 import { loadPersona } from "./persona/loader.js";
 import { createClient } from "./discord/client.js";
 import { registerHandler } from "./discord/handler.js";
+import { registerCommands, registerCommandHandler } from "./discord/commands.js";
 
 async function main() {
   console.log("fake-me-discord starting up...");
@@ -15,12 +16,17 @@ async function main() {
   // Wire up message handler
   registerHandler(client, persona);
 
-  // Log when ready
-  client.once("ready", (c) => {
+  // Wire up slash command handler
+  registerCommandHandler(client, persona);
+
+  // Log when ready and register slash commands
+  client.once("ready", async (c) => {
     console.log(`Logged in as ${c.user.tag}`);
     console.log(`Watching ${config.channels.length} channel(s)`);
     console.log(`Reply chance: ${config.behavior.replyChance * 100}%`);
     console.log(`Cooldown: ${config.behavior.cooldownMs}ms`);
+
+    await registerCommands(c.user.id);
   });
 
   // Login

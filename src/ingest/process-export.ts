@@ -59,9 +59,23 @@ interface RawMessage {
 /**
  * Parse DiscordChatExporter JSON format.
  * Expected structure: { messages: [{ author: { id }, content, timestamp }] }
+ *
+ * Also supports flat array format from export-my-messages.ts:
+ * [{ content, timestamp, channelId, guildId, guildName }]
  */
-function parseDiscordChatExporterJson(filePath: string): RawMessage[] {
+function parseDiscordChatExporterJson(filePath: string, userId: string): RawMessage[] {
   const raw = JSON.parse(readFileSync(filePath, "utf-8"));
+
+  // Flat array from export-my-messages.ts
+  if (Array.isArray(raw)) {
+    return raw.map((m: any) => ({
+      content: String(m.content ?? ""),
+      authorId: userId, // all messages are from the target user
+      timestamp: String(m.timestamp ?? ""),
+    }));
+  }
+
+  // DiscordChatExporter format
   const messages: unknown[] = raw.messages ?? [];
   return messages.map((m: any) => ({
     content: String(m.content ?? ""),
@@ -223,7 +237,7 @@ function main() {
   // Parse
   const raw =
     args.format === "json"
-      ? parseDiscordChatExporterJson(args.input)
+      ? parseDiscordChatExporterJson(args.input, args.userId)
       : parseDiscordCsv(args.input, args.userId);
 
   console.log(`Parsed ${raw.length} total messages`);
